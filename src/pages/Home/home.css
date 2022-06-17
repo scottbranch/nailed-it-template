@@ -1,29 +1,14 @@
 .home-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-.home-page > div {
-    flex: 1;
-    max-width: 500px;
-}
-
-.home-title {
-    text-align: center;
-    margin: 0;
-    color: white;
-    font-size: 72px;
-    font-weight: 400;
-    margin-bottom: 16px;
-}
-
-.home-subtitle {
-    text-align: center;
-    margin: 0;
-    color: white;
-    font-size: 16px;
-    font-weight: 400;
-    margin-bottom: 16px;
+.volume-bar {
+  height: 150px;
+  background: green;
+  width: 500px;
+  transform-origin: left;
+  transition: 100ms ease;
 }

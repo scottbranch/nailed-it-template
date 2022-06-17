@@ -1,29 +1,47 @@
-import React from "react";
-import Lottie from "react-lottie";
-import Devs from "../../lotties/developers.json";
-import "./home.css";
+import React, { useEffect, useState } from 'react';
+import './home.css';
 
 function HomePage() {
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: Devs,
-  };
+  const [volumeLevel, setVolumeLevel] = useState(0);
+
+  useEffect(() => {
+    navigator.mediaDevices
+      .getUserMedia({
+        audio: true,
+        video: false,
+      })
+      .then(function (stream) {
+        const audioContext = new AudioContext();
+        const analyser = audioContext.createAnalyser();
+        const microphone = audioContext.createMediaStreamSource(stream);
+        const scriptProcessor = audioContext.createScriptProcessor(2048, 1, 1);
+
+        analyser.smoothingTimeConstant = 0.8;
+        analyser.fftSize = 1024;
+
+        microphone.connect(analyser);
+        analyser.connect(scriptProcessor);
+        scriptProcessor.connect(audioContext.destination);
+        scriptProcessor.onaudioprocess = function () {
+          const array = new Uint8Array(analyser.frequencyBinCount);
+          analyser.getByteFrequencyData(array);
+          const arraySum = array.reduce((a, value) => a + value, 0);
+          const average = arraySum / array.length;
+          console.log(Math.round(average));
+          setVolumeLevel(Math.round(average));
+        };
+      })
+      .catch(function (err) {
+        console.error(err);
+      });
+  }, []);
 
   return (
     <div className="home-page">
-      <Lottie options={defaultOptions} height={500} width={500} />
-      <div>
-        <h1 className="home-title">NAILED IT!</h1>
-        <p className="home-subtitle">
-          Welcome to XD Creative Field Day | "NAILED IT"... A chance for
-          designers and developers to collaborate on something fun and creative
-          for the day. It’s like a casual hackathon but with a twist.
-        </p>
-        <p className="home-subtitle">
-          It’s like a casual hackathon but with a TWIST.
-        </p>
-      </div>
+      <div
+        className="volume-bar"
+        style={{ transform: `scaleX(.${volumeLevel})` }}
+      ></div>
     </div>
   );
 }
